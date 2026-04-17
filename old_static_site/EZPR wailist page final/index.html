@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EZPR — Permanent Residency, Made Simple.</title>
+  <meta name="description" content="AI-Powered. RCIC-Built. Join the waitlist for the most advanced way to navigate your Canadian PR journey." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(160deg, #0d0d0d 0%, #111010 55%, #0f0d0d 100%);
+      color: rgba(255,255,255,0.92);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    h1, h2, h3, h4, h5, h6, p { margin: 0; }
+
+    /* ── Animations ── */
+    @keyframes particleDrift {
+      0%   { transform: translateY(-30px) translateX(0) rotate(var(--rot)); opacity: 0; }
+      6%   { opacity: 1; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(110vh) translateX(var(--sway)) rotate(calc(var(--rot) + 180deg)); opacity: 0; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes antigravityFloat {
+      0%   { transform: translateY(0px); }
+      50%  { transform: translateY(-18px); }
+      100% { transform: translateY(0px); }
+    }
+
+    /* ── Stellar Galaxy Background ── */
+    #stellar-bg {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: auto;
+      background-color: #000;
+      overflow: hidden;
+    }
+    #stellar-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      outline: none;
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    #stellar-cards {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; /* Container is passthrough so OrbitControls still receive drags */
+    }
+    .stellar-card {
+      width: 85px;
+      height: 115px;
+      border-radius: 8px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+      background-color: #1F2121;
+      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: auto;
+      cursor: pointer;
+      transform-origin: center center;
+      transition: box-shadow 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .stellar-card.hovered {
+      box-shadow: 0 25px 50px rgba(49, 184, 198, 0.5), 0 0 30px rgba(49, 184, 198, 0.3);
+      border-color: rgba(49, 184, 198, 0.5);
+      z-index: 1000 !important;
+    }
+    .stellar-card-logo {
+      width: 100%;
+      height: 75px;
+      border-radius: 6px;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: rgba(0, 0, 0, 0.05) 0px 5px 6px 0px;
+    }
+    .stellar-card-logo svg {
+      opacity: 0.9;
+    }
+    .stellar-card-title {
+      margin-top: 8px;
+      text-align: center;
+      color: white;
+      font-size: 10px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Poppins', sans-serif;
+      pointer-events: none;
+    }
+
+    #app { 
+      position: relative;
+      z-index: 10;
+      pointer-events: none; 
+    }
+    .ez-hero, .ez-value, .ez-cta, .ez-footer { pointer-events: none; }
+    .ez-header { pointer-events: auto; }
+    .ez-logo, .ez-coming-soon, .ez-eyebrow, .ez-h1, .ez-sub, .ez-microcopy, .ez-form, .ez-btn, .ez-value-intro, .ez-h2, .ez-pain-card, .ez-value-body, .ez-cta-icon, .ez-cta-h2, .ez-cta-sub, .ez-cta-fine, .ez-footer span {
+      pointer-events: auto; /* Makes only the actual text/buttons interactable, leaving empty space for Galaxy Dragging */
+    }
+
+    /* ── Particles ── */
+    #particles {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      top: -30px;
+    }
+
+    /* ── Noise overlay ── */
+    #noise {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 128px 128px;
+      opacity: 0.5;
+    }
+
+    /* ── Ambient glow ── */
+    #glow {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(213,43,30,0.06) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Main wrapper ── */
+    #app {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── Header ── */
+    .ez-header {
+      padding: 32px 52px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: background 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), backdrop-filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), padding 0.4s ease;
+    }
+
+    .ez-header.scrolled {
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      padding-top: 18px;
+      padding-bottom: 18px;
+      border-bottom: none;
+    }
+
+    .ez-logo-link {
+      display: inline-block;
+      line-height: 0;
+      text-decoration: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .ez-logo-link:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    /* Logo PNG already has white EZPR + red "Permanent Residency," baked in.
+       The file is a 1125x1125 square with lots of transparent padding;
+       clip-path trims the whitespace and negative margins collapse the empty bounding box. */
+    .ez-logo-img {
+      display: block;
+      width: clamp(240px, 22vw, 320px);
+      height: auto;
+      aspect-ratio: 1 / 1;
+      clip-path: inset(38% 13% 40% 14%);
+      margin-top: clamp(-122px, -8.4vw, -91px);
+      margin-bottom: clamp(-128px, -8.8vw, -96px);
+      margin-left: clamp(-45px, -3.1vw, -34px);
+      margin-right: clamp(-42px, -2.9vw, -31px);
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+
+    .ez-coming-soon {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(10px, 1.2vw, 12px);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #D52B1E;
+      line-height: 1;
+      white-space: nowrap;
+      flex-shrink: 0;
+      border: 1px solid rgba(213,43,30,0.5);
+      padding: 4px 10px;
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+      background: rgba(213,43,30,0.05);
+      box-shadow: 0 0 15px rgba(213,43,30,0.1);
+      animation: badgePulse 3s ease-in-out infinite;
+    }
+
+    .ez-coming-soon::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40px;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(30deg);
+      animation: badgeShine 4s infinite linear;
+      filter: blur(5px);
+    }
+
+    @keyframes badgeShine {
+      0% { left: -60%; }
+      20% { left: 140%; }
+      100% { left: 140%; }
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(213,43,30,0.1); border-color: rgba(213,43,30,0.5); }
+      50% { box-shadow: 0 0 25px rgba(213,43,30,0.25); border-color: rgba(213,43,30,0.8); }
+    }
+
+    /* ── Hero ── */
+    .ez-hero {
+      min-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 52px 100px;
+      max-width: 940px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .ez-eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .ez-eyebrow-line {
+      width: 28px;
+      height: 1px;
+      background: #D52B1E;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .ez-eyebrow-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: #D52B1E;
+    }
+
+    .ez-h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 600;
+      line-height: 1.05;
+      text-transform: none;
+      color: rgba(255,255,255,0.95);
+      margin-bottom: 32px;
+      max-width: 820px;
+    }
+
+    .ez-h1 .red { color: #D52B1E; }
+    
+    .ez-hero-secondary {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(15px, 1.6vw, 17px);
+      font-weight: 400;
+      color: rgba(255,255,255,0.36);
+      letter-spacing: 0.02em;
+      line-height: 1.7;
+      margin-top: 12px;
+      margin-bottom: 52px;
+    }
+
+    .ez-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(15px, 2vw, 18px);
+      font-weight: 400;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.45);
+      max-width: 500px;
+      margin-bottom: 52px;
+    }
+
+    .ez-microcopy {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 16px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Form ── */
+    .ez-form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .ez-form.cta { max-width: 460px; }
+    .ez-form .magnetic-wrap {
+      display: inline-block;
+    }
+    .ez-form .ez-btn {
+      min-width: 220px;
+    }
+
+    .ez-input {
+      flex: 1;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 2px;
+      color: rgba(255,255,255,0.9);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.4s ease, box-shadow 0.4s ease;
+      min-width: 0;
+    }
+
+    .ez-input::placeholder { color: rgba(255,255,255,0.25); transition: color 0.3s ease; }
+    .ez-input:focus { border-color: rgba(213,43,30,0.5); background: rgba(255,255,255,0.06); box-shadow: 0 0 20px rgba(213,43,30,0.06); }
+    .ez-input:focus::placeholder { color: rgba(255,255,255,0.15); }
+
+    .ez-btn {
+      padding: 14px 28px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      border: none;
+      border-radius: 30px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      min-height: 48px;
+      background: #D52B1E;
+      color: #ffffff;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(213, 43, 30, 0.2);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .ez-btn:hover { background: #e63125; box-shadow: 0 8px 30px rgba(213, 43, 30, 0.35); }
+    .ez-btn:active { transform: scale(0.96); transition-duration: 0.1s; }
+
+    /* Shimmer Effect */
+    .ez-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: all 0.6s;
+    }
+
+    .ez-btn:hover::before {
+      left: 100%;
+    }
+
+    /* Magnetic Hit Area */
+    .magnetic-wrap {
+      display: inline-block;
+      padding: 20px;
+      margin: -20px;
+      position: relative;
+      z-index: 1;
+    }
+    .ez-btn:disabled { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); cursor: not-allowed; opacity: 1; }
+
+    .ez-success {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #D52B1E;
+    }
+
+    .ez-success-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .ez-success-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── Value Section ── */
+    .ez-value {
+      padding: 100px 52px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .ez-value::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(213,43,30,0.3), transparent);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .ez-value.fade-in.visible::before { opacity: 1; }
+
+    .ez-value-intro {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(15px, 1.6vw, 17px);
+      font-weight: 400;
+      color: rgba(255,255,255,0.36);
+      letter-spacing: 0.02em;
+      margin-bottom: 48px;
+      max-width: 640px;
+      line-height: 1.7;
+    }
+
+    .ez-h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(30px, 5vw, 56px);
+      font-weight: 600;
+      line-height: 1.05;
+      text-transform: none;
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 64px;
+      max-width: 680px;
+    }
+
+    .ez-h2 .red { color: #D52B1E; }
+
+    .ez-pain-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      max-width: 900px;
+      width: 100%;
+      margin-bottom: 80px;
+    }
+
+    .ez-pain-card {
+      padding: 13px;
+      background: rgba(13,13,13,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.6s ease;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      cursor: default;
+      position: relative;
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+
+    .ez-pain-card:hover {
+      transform: translateY(-6px) scale(1.015);
+      border-color: rgba(213, 43, 30, 0.35);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(213, 43, 30, 0.08);
+      background: rgba(18,18,18,0.95);
+      z-index: 2;
+    }
+
+    .ez-pain-card:hover .ez-pain-icon {
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .ez-pain-card .ez-pain-icon {
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .ez-pain-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .ez-pain-icon {
+      color: #D52B1E;
+      opacity: 0.95;
+      flex-shrink: 0;
+    }
+
+    .ez-pain-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #D52B1E;
+      line-height: 1.1;
+    }
+
+    .ez-pain-label .white {
+      color: rgba(255,255,255,0.95);
+    }
+
+    .ez-pain-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.48);
+      line-height: 1.7;
+    }
+
+    .ez-value-body {
+      max-width: 600px;
+    }
+
+    .ez-value-body p:first-child {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(15px, 1.8vw, 18px);
+      font-weight: 400;
+      color: rgba(255,255,255,0.58);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .ez-value-body p:last-child {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── CTA Section ── */
+    .ez-cta {
+      padding: 48px 52px 120px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .ez-cta::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(213,43,30,0.3), transparent);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .ez-cta.fade-in.visible::before { opacity: 1; }
+
+    .ez-cta-icon {
+      margin-bottom: 32px;
+      opacity: 0.65;
+      line-height: 1;
+    }
+
+    .ez-cta-h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 4.5vw, 52px);
+      font-weight: 600;
+      text-transform: none;
+      color: rgba(255,255,255,0.92);
+      line-height: 1.1;
+      margin-bottom: 20px;
+      max-width: 560px;
+    }
+
+    .ez-cta-h2 em {
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .ez-cta-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.36);
+      margin-bottom: 44px;
+      line-height: 1.7;
+      max-width: 380px;
+    }
+
+    .ez-cta-fine {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 16px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Footer ── */
+    .ez-footer {
+      padding: 28px 52px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ez-footer span {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+    }
+
+    /* ── Fade-in ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: opacity, transform;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Staggered child reveals ── */
+    .fade-in.visible .ez-eyebrow,
+    .fade-in.visible .ez-h1,
+    .fade-in.visible .ez-hero-secondary,
+    .fade-in.visible .ez-form,
+    .fade-in.visible .ez-microcopy,
+    .fade-in.visible .ez-value-intro,
+    .fade-in.visible .ez-h2,
+    .fade-in.visible .ez-value-body,
+    .fade-in.visible .ez-cta-h2,
+    .fade-in.visible .ez-cta-sub {
+      animation: smoothReveal 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+
+    .fade-in.visible .ez-eyebrow { animation-delay: 0s; }
+    .fade-in.visible .ez-h1 { animation-delay: 0.12s; }
+    .fade-in.visible .ez-hero-secondary { animation-delay: 0.22s; }
+    .fade-in.visible .ez-form { animation-delay: 0.32s; }
+    .fade-in.visible .ez-microcopy { animation-delay: 0.4s; }
+    .fade-in.visible .ez-value-intro { animation-delay: 0.08s; }
+    .fade-in.visible .ez-h2 { animation-delay: 0.16s; }
+    .fade-in.visible .ez-value-body { animation-delay: 0.24s; }
+    .fade-in.visible .ez-cta-h2 { animation-delay: 0.1s; }
+    .fade-in.visible .ez-cta-sub { animation-delay: 0.2s; }
+
+    @keyframes smoothReveal {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Eyebrow line grow animation ── */
+    .fade-in .ez-eyebrow-line {
+      transform: scaleX(0);
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .fade-in.visible .ez-eyebrow-line {
+      transform: scaleX(1);
+      transition-delay: 0.3s;
+    }
+
+    /* ── Tablet ── */
+    @media (max-width: 900px) {
+      .ez-header  { padding: 28px 32px 20px; }
+      .ez-hero    { padding: 52px 32px 80px; }
+      .ez-value   { padding: 72px 32px; }
+      .ez-cta     { padding: 48px 32px 88px; }
+      .ez-footer  { padding: 24px 32px; }
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      .ez-header  { padding: 20px 20px 16px; align-items: center; }
+      .ez-logo-img { width: clamp(200px, 55vw, 260px); }
+      .ez-coming-soon { font-size: 10px; padding: 3px 8px; margin-right: 0; }
+      .ez-hero    { padding: 40px 20px 72px; min-height: 78vh; }
+      .ez-value   { padding: 56px 20px; }
+      .ez-pain-grid { grid-template-columns: 1fr; margin-bottom: 52px; }
+      .ez-cta     { padding: 60px 20px 72px; }
+      .ez-footer  { padding: 20px; flex-direction: column; gap: 8px; text-align: center; }
+      .ez-form    { flex-direction: column; max-width: 100% !important; }
+      .ez-btn     { width: 100%; padding: 16px 28px; min-height: 52px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Stellar Galaxy Background -->
+  <div id="stellar-bg" aria-hidden="true">
+    <canvas id="stellar-canvas"></canvas>
+    <div id="stellar-cards"></div>
+  </div>
+
+  <!-- Particles -->
+  <div id="particles" aria-hidden="true"></div>
+
+  <!-- Noise -->
+  <div id="noise" aria-hidden="true"></div>
+
+  <!-- Glow -->
+  <div id="glow" aria-hidden="true"></div>
+
+  <!-- App -->
+  <div id="app">
+
+    <!-- HEADER -->
+    <header class="ez-header">
+      <a href="#" class="ez-logo-link" aria-label="EZPR Home">
+        <img src="public/images/ezpr_logo_png.png" alt="EZPR — Permanent Residency" class="ez-logo-img" />
+      </a>
+      <span class="ez-coming-soon">Coming soon</span>
+    </header>
+
+    <!-- HERO -->
+    <section class="ez-hero fade-in" id="hero">
+      <div class="ez-eyebrow">
+        <span class="ez-eyebrow-line"></span>
+        <span class="ez-eyebrow-text">Limited access</span>
+        <span class="ez-eyebrow-line"></span>
+      </div>
+
+      <h1 class="ez-h1" style="margin-bottom: 24px;">
+        Permanent Residency,<br>
+        <span class="red">Made Simple.</span>
+      </h1>
+      <p class="ez-hero-secondary">AI-Powered. RCIC-Built.</p>
+
+      <p class="ez-sub" style="display: none;">
+        Rcic-guided. Ai-powered. Built for people who deserve clarity.
+      </p>
+
+      <div id="form-hero-wrap" class="magnetic-wrap">
+        <form class="ez-form" id="form-hero" onsubmit="handleSubmit(event,'hero')">
+          <div class="magnetic-wrap">
+            <button type="submit" class="ez-btn">Join The Waitlist</button>
+          </div>
+        </form>
+      </div>
+
+      <p class="ez-microcopy">No credit card required. No Commitment.</p>
+    </section>
+
+    <!-- VALUE SECTION -->
+    <section class="ez-value fade-in" id="value">
+      <p class="ez-value-intro">
+        Every year, thousands of Canada PR applications get refused - Not because people don’t qualify. But because of small, avoidable mistakes.
+      </p>
+
+      <h2 class="ez-h2">
+        A better way<br>
+        <span class="red">is coming soon.</span>
+      </h2>
+
+      <div class="ez-pain-grid">
+        <div class="ez-pain-card">
+          <div class="ez-pain-header">
+            <svg class="ez-pain-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <path d="M12 17h.01" />
+            </svg>
+            <span class="ez-pain-label"><span class="white">No more</span> confusion</span>
+          </div>
+        </div>
+        <div class="ez-pain-card">
+          <div class="ez-pain-header">
+            <svg class="ez-pain-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="6"/>
+              <circle cx="12" cy="12" r="2"/>
+            </svg>
+            <span class="ez-pain-label"><span class="white">No more</span> guesswork</span>
+          </div>
+        </div>
+        <div class="ez-pain-card">
+          <div class="ez-pain-header">
+            <svg class="ez-pain-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2-1 4-2 7-2 2.5 0 4 1.5 6 2a1 1 0 0 1 1 1z"/>
+              <path d="M12 8v4"/>
+              <path d="M12 16h.01"/>
+            </svg>
+            <span class="ez-pain-label"><span class="white">No more</span> outdated information</span>
+          </div>
+        </div>
+        <div class="ez-pain-card">
+          <div class="ez-pain-header">
+            <svg class="ez-pain-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+              <path d="M12 18V6"/>
+            </svg>
+            <span class="ez-pain-label"><span class="white">No more</span> uncertainty at every step</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ez-value-body">
+        <p style="margin-bottom: 8px;">It will help you:</p>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 32px; color: rgba(255,255,255,0.65);">
+          <div style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D52B1E" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Spot possible mistakes early</div>
+          <div style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D52B1E" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Move forward with more clarity</div>
+          <div style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D52B1E" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Reduce uncertainty in your application</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="ez-cta fade-in" id="cta">
+      <h2 class="ez-cta-h2">
+        Be among the first<br>
+        <em>to get access</em>
+      </h2>
+
+
+      <div id="form-cta-wrap" class="magnetic-wrap">
+        <form class="ez-form cta" id="form-cta" onsubmit="handleSubmit(event,'cta')">
+          <div class="magnetic-wrap">
+            <button type="submit" class="ez-btn">Join the waitlist</button>
+          </div>
+        </form>
+      </div>
+
+      <p class="ez-cta-fine">No spam, ever. Unsubscribe anytime.</p>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="ez-footer">
+      <span>Copyright 2026 EZPR. All rights reserved</span>
+      <span>RCIC-Built. AI-Powered</span>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+  <script>
+    /* ── Lenis Smooth Scroll ── */
+    const lenis = new Lenis({
+      duration: 1.4,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 0.8,
+      touchMultiplier: 1.5,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    /* ── Smooth lerp utility ── */
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    /* ── Header scroll state ── */
+    (function initHeader() {
+      const header = document.querySelector('.ez-header');
+      let lastScroll = 0;
+      lenis.on('scroll', ({ scroll }) => {
+        if (scroll > 60) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+        lastScroll = scroll;
+      });
+    })();
+
+    /* ── Particles ── */
+    (function spawnParticles() {
+      const container = document.getElementById('particles');
+      const count = 12;
+      for (let i = 0; i < count; i++) {
+        const x          = Math.random() * 100;
+        const size       = 3 + Math.random() * 7;
+        const opacity    = 0.1 + Math.random() * 0.22;
+        const duration   = 16 + Math.random() * 20;
+        const delay      = Math.random() * 16;
+        const sway       = (40 + Math.random() * 60) + 'px';
+        const rot        = (Math.random() * 360) + 'deg';
+
+        const dot = document.createElement('div');
+        dot.className = 'particle';
+        dot.style.cssText = `
+          left: ${x}%;
+          opacity: ${opacity};
+          animation: particleDrift ${duration}s ${delay}s linear infinite;
+          --sway: ${sway};
+          --rot: ${rot};
+        `;
+
+        dot.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="3"  fill="#D52B1E" opacity="0.9"/>
+            <circle cx="10" cy="10" r="7"  fill="#D52B1E" opacity="0.14"/>
+            <circle cx="10" cy="10" r="10" fill="#D52B1E" opacity="0.05"/>
+          </svg>`;
+
+        container.appendChild(dot);
+      }
+    })();
+
+    /* ── Scroll fade-in with staggered children ── */
+    (function initFadeIn() {
+      const els = document.querySelectorAll('.fade-in');
+
+      function triggerValueStagger() {
+        const cards = document.querySelectorAll('.ez-pain-card');
+        gsap.fromTo(cards,
+          { opacity: 0, y: 35 },
+          { opacity: 1, y: 0, duration: 1, stagger: 0.12, ease: "power3.out", delay: 0.3 }
+        );
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            if (e.target.id === 'value') triggerValueStagger();
+            observer.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.06 });
+
+      els.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          setTimeout(() => {
+            el.classList.add('visible');
+            if (el.id === 'value') triggerValueStagger();
+          }, 200);
+        } else {
+          observer.observe(el);
+        }
+      });
+    })();
+
+    /* ── Form submit ── */
+    function handleSubmit(e, id) {
+      e.preventDefault();
+      const wrap = document.getElementById('form-' + id + '-wrap');
+      const btn  = e.target.querySelector('.ez-btn');
+
+      gsap.to(btn, { scale: 0.94, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.inOut" });
+
+      btn.disabled = true;
+      btn.style.pointerEvents = 'none';
+      btn.innerHTML = '<span style="opacity:0.5">Joining...</span>';
+
+      setTimeout(() => {
+        gsap.to(wrap, { opacity: 0, y: -12, duration: 0.5, ease: "power2.inOut", onComplete: () => {
+          wrap.innerHTML = `
+            <div class="ez-success">
+              <span class="ez-success-title">You're on the list.</span>
+              <span class="ez-success-sub">We'll reach out when it's your turn.</span>
+            </div>`;
+          gsap.fromTo(wrap.children[0], { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" });
+          gsap.set(wrap, { opacity: 1, y: 0 });
+        }});
+      }, 1200);
+    }
+
+    /* ── WebGL Stellar Galaxy Background ── */
+    (function initStellar() {
+      const loadScript = (src) => new Promise(res => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = res;
+        document.head.appendChild(s);
+      });
+
+      Promise.all([
+        loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"),
+        loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"),
+        loadScript("https://unpkg.com/lucide@latest")
+      ]).then(() => {
+        const bgContainer = document.getElementById('stellar-bg');
+        const canvas = document.getElementById('stellar-canvas');
+        const cardsEl = document.getElementById('stellar-cards');
+        if (!canvas) return;
+
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setSize(w, h);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setClearColor(0x000000, 1);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 2000);
+        camera.position.z = 25;
+
+        // Smooth Mouse Parallax — lerped for silky feel
+        let mouseX = 0, mouseY = 0;
+        let smoothMouseX = 0, smoothMouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+          mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+          mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        let baseAngle = 0;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+        const pointLight1 = new THREE.PointLight(0xffffff, 0.6);
+        pointLight1.position.set(10, 10, 10);
+        scene.add(pointLight1);
+        const pointLight2 = new THREE.PointLight(0xffffff, 0.3);
+        pointLight2.position.set(-10, -10, -10);
+        scene.add(pointLight2);
+
+        // Starfield
+        const starsGeo = new THREE.BufferGeometry();
+        const starsCount = 5000;
+        const pos = new Float32Array(starsCount * 3);
+        for(let i=0; i<starsCount; i++) {
+          pos[i*3] = (Math.random()-0.5)*1500;
+          pos[i*3+1] = (Math.random()-0.5)*1500;
+          pos[i*3+2] = (Math.random()-0.5)*1500;
+        }
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, sizeAttenuation: true });
+        const stars = new THREE.Points(starsGeo, starsMat);
+        scene.add(stars);
+
+
+        // Card Data
+        const cardTitles = [
+          "Check my eligibility", "Noc code finder", "Crs score calculator", "Express entry profile",
+          "Cec", "Fsw", "Pr application", "Ircc", "Express entry", "H&c", "Pnp",
+          "Spousal sponsorship", "Rcic", "Work permit", "Study permit"
+        ];
+
+        const cardIcons = [
+          "check-circle", "search", "calculator", "user-check",
+          "map", "globe", "file-signature", "landmark", "zap", "heart-handshake", "map-pin",
+          "users-round", "shield-check", "briefcase", "graduation-cap"
+        ];
+
+        const cardImages = [
+          "public/images/check_eligibility.png", "public/images/noc_finder.png", "public/images/crs_calculator.png", "public/images/ee_profile.png", "public/images/cec.png",
+          "public/images/fsw.png", "public/images/pr_application.png", "public/images/ircc.png", "public/images/express_entry.png", "public/images/hc.png",
+          "public/images/pnp.png", "public/images/spousal_sponsorship.png", "public/images/rcic.png", "public/images/work_permit.png", "public/images/study_permit.png"
+        ];
+
+        const cards = [];
+        const numCards = cardTitles.length;
+        const goldenRatio = (1 + Math.sqrt(5)) / 2;
+
+        for (let i = 0; i < numCards; i++) {
+          const y = 1 - (i / (numCards - 1)) * 2;
+          const radiusAtY = Math.sqrt(1 - y * y);
+          const theta = (2 * Math.PI * i) / goldenRatio;
+          const x = Math.cos(theta) * radiusAtY;
+          const z = Math.sin(theta) * radiusAtY;
+          const layerRadius = 12 + (i % 3) * 4;
+
+          const cx = x * layerRadius;
+          const cy = y * layerRadius;
+          const cz = z * layerRadius;
+
+          const anchor = new THREE.Object3D();
+          anchor.position.set(cx, cy, cz);
+          scene.add(anchor);
+
+          const el = document.createElement('div');
+          el.className = 'stellar-card';
+
+          const bgColors = ['1F2121', '2D3748', '1A202C', '2C5282', '276749'];
+          const bgColor = bgColors[i % bgColors.length];
+
+          el.innerHTML = `
+            <div class="stellar-card-logo" style="background-color: #${bgColor}">
+              <img src="${cardImages[i]}" style="width:100%; height:75px; object-fit:cover; border-radius:6px; pointer-events:none;" alt="${cardTitles[i]}" />
+            </div>
+            <div class="stellar-card-title">${cardTitles[i]}</div>
+          `;
+
+          el.onmouseenter = () => { el.classList.add('hovered'); };
+          el.onmouseleave = () => { el.classList.remove('hovered'); };
+
+          cardsEl.appendChild(el);
+          cards.push({ anchor, el });
+        }
+
+        if (window.lucide) window.lucide.createIcons();
+
+        const handleResize = () => {
+          const nw = window.innerWidth;
+          const nh = window.innerHeight;
+          camera.aspect = nw / nh;
+          camera.updateProjectionMatrix();
+          renderer.setSize(nw, nh);
+        };
+        window.addEventListener('resize', handleResize);
+
+        // Scroll disperse — lerped for smoothness
+        const disperseVectors = cards.map(() => ({
+          x: (Math.random() - 0.5) * 80,
+          y: (Math.random() - 0.5) * 80,
+          z: (Math.random() - 0.5) * 40,
+        }));
+        cards.forEach((card, i) => { card.disperseVec = disperseVectors[i]; });
+
+        let targetDisperseProgress = 0;
+        let smoothDisperseProgress = 0;
+        let targetCanvasY = 0;
+        let smoothCanvasY = 0;
+
+        lenis.on('scroll', ({ scroll }) => {
+          const maxScroll = 400;
+          targetDisperseProgress = Math.min(scroll / maxScroll, 1);
+          targetCanvasY = scroll * 0.3;
+        });
+
+        const vec3 = new THREE.Vector3();
+        const render = () => {
+          requestAnimationFrame(render);
+
+          // Lerp mouse for ultra-smooth camera
+          smoothMouseX = lerp(smoothMouseX, mouseX, 0.04);
+          smoothMouseY = lerp(smoothMouseY, mouseY, 0.04);
+
+          // Lerp scroll values
+          smoothDisperseProgress = lerp(smoothDisperseProgress, targetDisperseProgress, 0.06);
+          smoothCanvasY = lerp(smoothCanvasY, targetCanvasY, 0.06);
+          canvas.style.transform = `translate3d(0, ${smoothCanvasY}px, 0)`;
+
+          stars.rotation.y += 0.00002;
+          stars.rotation.x += 0.00001;
+
+          // Parallax Camera — silky inertia
+          baseAngle += 0.0004;
+          const targetAngle = baseAngle + smoothMouseX * 1.5;
+          const radius = 25;
+
+          const targetX = Math.sin(targetAngle) * radius;
+          const targetZ = Math.cos(targetAngle) * radius;
+          const targetY = -(smoothMouseY * 15);
+
+          // Ultra-smooth camera damping (lower = smoother)
+          camera.position.x = lerp(camera.position.x, targetX, 0.025);
+          camera.position.y = lerp(camera.position.y, targetY, 0.025);
+          camera.position.z = lerp(camera.position.z, targetZ, 0.025);
+          camera.lookAt(scene.position);
+
+          const w2 = window.innerWidth / 2;
+          const h2 = window.innerHeight / 2;
+
+          cards.forEach(card => {
+            vec3.copy(card.anchor.position);
+            vec3.project(camera);
+
+            if (vec3.z > 1) {
+              card.el.style.display = 'none';
+              return;
+            }
+            card.el.style.display = 'block';
+
+            const x = (vec3.x * w2) + w2;
+            const y = -(vec3.y * h2) + h2;
+
+            const dist = camera.position.distanceTo(card.anchor.position);
+            const scale = Math.max(0.3, Math.min(1.5, 18 / dist));
+            const zIndex = Math.round((1 - vec3.z) * 100);
+
+            const rotX = smoothMouseY * 10;
+            const rotY = -smoothMouseX * 10;
+
+            const dp = smoothDisperseProgress;
+            const dv = card.disperseVec;
+            const dispersedX = x + dv.x * dp * w2 * 0.08;
+            const dispersedY = y + dv.y * dp * h2 * 0.08;
+            const opacityVal = Math.max(0, 1 - dp * 1.4);
+            card.el.style.opacity = opacityVal.toString();
+
+            let transform = `translate3d(${dispersedX - 42.5}px, ${dispersedY - 57.5}px, 0) scale(${scale}) perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            if (card.el.classList.contains('hovered')) {
+              transform += ' scale(1.15)';
+            }
+            card.el.style.transform = transform;
+            if (!card.el.classList.contains('hovered')) card.el.style.zIndex = zIndex.toString();
+          });
+
+          renderer.render(scene, camera);
+        };
+
+        // Magnetic Buttons — smoother with power3 easing
+        function initMagneticButtons() {
+          const wraps = document.querySelectorAll('.magnetic-wrap');
+          wraps.forEach(wrap => {
+            const btn = wrap.querySelector('.ez-btn');
+            if (!btn) return;
+
+            wrap.addEventListener('mousemove', (e) => {
+              const rect = wrap.getBoundingClientRect();
+              const relX = e.clientX - rect.left;
+              const relY = e.clientY - rect.top;
+              const x = (relX - rect.width / 2) * 0.15;
+              const y = (relY - rect.height / 2) * 0.15;
+
+              gsap.to(btn, {
+                x: x,
+                y: y,
+                duration: 0.8,
+                ease: "power3.out"
+              });
+            });
+
+            wrap.addEventListener('mouseleave', () => {
+              gsap.to(btn, {
+                x: 0,
+                y: 0,
+                duration: 1.0,
+                ease: "elastic.out(1, 0.4)"
+              });
+            });
+          });
+        }
+        initMagneticButtons();
+
+        render();
+      });
+    })();
+  </script>
+</body>
+</html>
