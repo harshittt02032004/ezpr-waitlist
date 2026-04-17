@@ -1,26 +1,18 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { gsap } from 'gsap';
 import { useMagnetic } from '@/hooks/useMagnetic';
+import { useWaitlist } from './WaitlistProvider';
 
 const Hero: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { wrapRef, btnRef } = useMagnetic();
+  const { open } = useWaitlist();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    // Replicate original animation
     gsap.to(btnRef.current, { scale: 0.94, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.inOut" });
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1200);
+    open();
   };
 
   return (
@@ -37,27 +29,20 @@ const Hero: React.FC = () => {
       </h1>
       <p className="ez-hero-secondary">AI-Powered. RCIC-Built.</p>
 
-      {!isSubmitted ? (
-        <div id="form-hero-wrap" className="magnetic-wrap" ref={wrapRef}>
-          <form className="ez-form" id="form-hero" onSubmit={handleSubmit}>
-            <div className="magnetic-wrap">
-              <button 
-                type="submit" 
-                className="ez-btn" 
-                ref={btnRef}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Joining...' : 'Join The Waitlist'}
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : (
-        <div className="ez-success" style={{ marginTop: "20px" }}>
-          <span className="ez-success-title">You're on the list.</span>
-          <span className="ez-success-sub">We'll reach out when it's your turn.</span>
-        </div>
-      )}
+      <div id="form-hero-wrap" className="magnetic-wrap" ref={wrapRef}>
+        <form className="ez-form" id="form-hero" onSubmit={(e) => e.preventDefault()}>
+          <div className="magnetic-wrap">
+            <button
+              type="button"
+              className="ez-btn"
+              ref={btnRef}
+              onClick={handleClick}
+            >
+              Join The Waitlist
+            </button>
+          </div>
+        </form>
+      </div>
 
       <p className="ez-microcopy">No credit card required. No Commitment.</p>
     </section>

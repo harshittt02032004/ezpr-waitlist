@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Mail } from 'lucide-react';
 import { gsap } from 'gsap';
 import { useMagnetic } from '@/hooks/useMagnetic';
+import { useWaitlist } from './WaitlistProvider';
 
 const CTASection: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const { wrapRef, btnRef } = useMagnetic();
+  const { open } = useWaitlist();
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -28,16 +27,10 @@ const CTASection: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
     gsap.to(btnRef.current, { scale: 0.94, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.inOut" });
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1200);
+    open();
   };
 
   return (
@@ -51,27 +44,20 @@ const CTASection: React.FC = () => {
         <em>to get access</em>
       </h2>
 
-      {!isSubmitted ? (
-        <div id="form-cta-wrap" className="magnetic-wrap" ref={wrapRef}>
-          <form className="ez-form cta" id="form-cta" onSubmit={handleSubmit}>
-            <div className="magnetic-wrap">
-              <button 
-                type="submit" 
-                className="ez-btn" 
-                ref={btnRef}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Joining...' : 'Join the waitlist'}
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : (
-        <div className="ez-success" style={{ marginTop: "20px" }}>
-          <span className="ez-success-title">You're on the list.</span>
-          <span className="ez-success-sub">We'll reach out when it's your turn.</span>
-        </div>
-      )}
+      <div id="form-cta-wrap" className="magnetic-wrap" ref={wrapRef}>
+        <form className="ez-form cta" id="form-cta" onSubmit={(e) => e.preventDefault()}>
+          <div className="magnetic-wrap">
+            <button
+              type="button"
+              className="ez-btn"
+              ref={btnRef}
+              onClick={handleClick}
+            >
+              Join the waitlist
+            </button>
+          </div>
+        </form>
+      </div>
 
       <p className="ez-cta-fine">No spam, ever. Unsubscribe anytime.</p>
     </section>

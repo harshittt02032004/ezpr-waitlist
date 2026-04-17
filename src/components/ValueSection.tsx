@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
-import { HelpCircle, Orbit } from 'lucide-react';
+import { HelpCircle, Orbit, ShieldAlert, Compass } from 'lucide-react';
 
 const ValueSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -44,6 +44,18 @@ const ValueSection: React.FC = () => {
           <div className="ez-pain-header">
             <Orbit className="ez-pain-icon" size={28} strokeWidth={1.5} />
             <span className="ez-pain-label"><span className="white">No more</span> guesswork</span>
+          </div>
+        </div>
+        <div className="ez-pain-card">
+          <div className="ez-pain-header">
+            <ShieldAlert className="ez-pain-icon" size={28} strokeWidth={1.5} />
+            <span className="ez-pain-label"><span className="white">No more</span> outdated information</span>
+          </div>
+        </div>
+        <div className="ez-pain-card">
+          <div className="ez-pain-header">
+            <Compass className="ez-pain-icon" size={28} strokeWidth={1.5} />
+            <span className="ez-pain-label"><span className="white">No more</span> uncertainty at every step</span>
           </div>
         </div>
       </div>

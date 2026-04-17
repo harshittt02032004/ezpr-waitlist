@@ -2,6 +2,7 @@
 .cursor/
 .vscode/
 .idea/
+.claude/
 
 # OS files
 Thumbs.db
@@ -12,5 +13,18 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Node modules (if any are added later)
+# Node modules
 node_modules/
+
+# Next.js build output
+.next/
+out/
+tsconfig.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel
